@@ -1,0 +1,172 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+          
+             x:Class="SimpleSnmpClient.Views.SnmpMainView">
+  <Grid RowDefinitions="Auto,*,Auto" Background="#EEE">
+
+    <!-- Title bar-->
+    <Grid Grid.Row="0" Background="#EEE" Height="40" ColumnDefinitions="*">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2">
+        <Label FontWeight="Black" >SNMP</Label>
+        <Label>Simple Client</Label>
+      </StackPanel>
+    </Grid>
+
+    <!-- Main area -->
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Background="#777">
+      <Grid Grid.Column="0"  Width="140">
+        <StackPanel Name="SnmpV3Params" Margin="0 5" IsVisible="{Binding #V3RadioBtn.IsChecked}" >
+
+          <Label>Ip address:</Label>
+          <TextBox Text="{Binding SnmpAgentV3.IpAddress}"></TextBox>
+          
+          <Label>Port:</Label>
+          <TextBox Text="{Binding SnmpAgentV3.Port}">161</TextBox>
+
+          <Label>User name: </Label>
+          <TextBox Text="{Binding SnmpAgentV3.Username}"></TextBox>
+
+          <Label>Context: </Label>
+          <TextBox Text="{Binding SnmpAgentV3.Context}"></TextBox>
+
+
+          <Label>Auth Password:</Label>
+          <TextBox Text="{Binding SnmpAgentV3.AuthPassword}"></TextBox>
+
+          <Label>Auth Provider:</Label>
+          <ComboBox  HorizontalAlignment="Stretch" Items="{Binding AuthProviders}" SelectedIndex="0" SelectedItem="{Binding SnmpAgentV3.AuthProvider, Mode=TwoWay}"  />
+
+          <Label>Priv Password:</Label>
+          <TextBox Text="{Binding SnmpAgentV3.PrivPassword}"></TextBox>
+
+          <Label>Priv Provider:</Label>
+          <ComboBox HorizontalAlignment="Stretch"  Items="{Binding PrivProviders}" SelectedIndex="3" SelectedItem="{Binding SnmpAgentV3.PrivProvider, Mode=TwoWay}"  />
+
+          <Label>Discovery Timeout:</Label>
+          <Label>(Milliseconds)</Label>
+          <TextBox Name="V3DiscoveryTimeout" Text="{Binding SnmpAgentV3.DiscoveryTimeout}"  ></TextBox>
+
+          <Label>Response Timeout:</Label>
+          <Label>(Milliseconds)</Label>
+          <TextBox Name="V3ResponseTimeout" Text="{Binding SnmpAgentV3.ResponseTimeout}"  ></TextBox>
+        </StackPanel>
+
+        <StackPanel Name="SnmpV2Params" Margin="0 5" IsVisible="{Binding #V2RadioBtn.IsChecked}" >
+
+          <Label>Ip address:</Label>
+          <TextBox Text="{Binding SnmpAgentV2.IpAddress, Mode=TwoWay}"/>
+
+          <Label>Port:</Label>
+          <TextBox Text="{Binding SnmpAgentV2.Port, Mode=TwoWay}" />
+
+          <Label>Community: </Label>
+          <TextBox Text="{Binding SnmpAgentV2.Community, Mode=TwoWay}"></TextBox>
+
+          <Label>Response Timeout:</Label>
+          <Label>(Milliseconds)</Label>
+          <TextBox Name="V2ResponseTimeout" Text="{Binding SnmpAgentV2.ResponseTimeout}"></TextBox>
+
+
+        </StackPanel>
+      </Grid>
+      
+      <Grid Grid.Column="1" RowDefinitions="Auto,*" Background="#AAA" >
+
+        <StackPanel Grid.Row="0">
+
+          <StackPanel Orientation="Horizontal">
+            <RadioButton Name="GetRadioBtn" Margin="5 0 5 0" IsChecked="{Binding GetOperation, FallbackValue=true}" >GET</RadioButton>
+            <RadioButton Name="SetRadioBtn">SET</RadioButton>
+          </StackPanel>
+
+          <Label Margin="5 0 5 0">OID:</Label>
+          <TextBox Text="{Binding Oid}" Margin="5 0 5 0">1.3.6.1.4.1.51847.2.1.92.0</TextBox>
+
+          <StackPanel IsVisible="{Binding #SetRadioBtn.IsChecked}">
+            <Label Margin="5 0 5 0" >Value:</Label>
+            <TextBox Text="{Binding OidValue}" Margin="5 0 5 0">1.3.6.1.4.1.51847.2.1.92.0</TextBox>
+
+            <Label Margin="5 0 5 0" >Data type:</Label>
+            <ComboBox HorizontalAlignment="Stretch" Margin="5 0 5 0" Items="{Binding DataTypesProviders}" SelectedIndex="0" SelectedItem="{Binding SnmpDataType, Mode=OneWayToSource}"  />
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Margin="5 0 15 0" Command="{Binding ClearLogs}" IsEnabled="{Binding OidValue}" >Clear logs</Button>
+            <Button Margin="5" Command="{Binding PerformAction}">Perform</Button>
+          </StackPanel>
+
+
+        </StackPanel>
+
+        <ScrollViewer  Grid.Row="1" AllowAutoHide="False" >
+          <ItemsControl Margin="5 0 5 5" Background="Black" Foreground="#41FF00" Padding="5" Items="{Binding Items}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <TextBlock  Text="{Binding DataPresented}"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+        <!--<TextBlock Grid.Row="1" Margin="5 0 5 5" Background="Black" Foreground="#41FF00" Padding="5" Text="{Binding ">
+          Oid 1.3.6.5.3 value test1
+        </TextBlock>-->
+        
+      </Grid>
+    </Grid>
+
+    <!-- Bottom bar-->
+    <Grid  Grid.Row="2" Margin="8"  ColumnDefinitions="Auto,Auto,*,Auto,Auto,*,Auto,Auto" Background="#EEE">
+      <StackPanel Orientation="Horizontal"  Grid.Column="0" Grid.ColumnSpan="2">
+        
+        <Grid RowDefinitions="Auto,*" >
+          <Label Grid.Row="0">Snmp Version</Label>
+          <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <RadioButton Name="V2RadioBtn" Content="V2" IsChecked="{Binding V2Checked, TargetNullValue=false,FallbackValue=false}"  />
+            <RadioButton Name="V3RadioBtn" Content="V3" Margin="5 0 0 0" IsChecked="{Binding V3Checked, TargetNullValue=true,FallbackValue=true }" />
+          </StackPanel>
+        </Grid>
+     
+
+        <StackPanel Orientation="Horizontal" >
+        <Border Background="WhiteSmoke"
+        BorderBrush="Black"
+        BorderThickness="1"
+        CornerRadius="3"
+                Margin="40 0 0 0">
+          <StackPanel Orientation="Horizontal">
+            <Button Margin="5" Command="{Binding LoadProfile}" CommandParameter="1" IsEnabled="{Binding OidValue}" >Profile 1 Load</Button>
+            <Button Margin="5" Command="{Binding SaveProfile}" CommandParameter="1" IsEnabled="{Binding OidValue}" >Profile 1 Save</Button>
+          </StackPanel>
+        </Border>
+
+        <Border Background="WhiteSmoke"
+       BorderBrush="Black"
+       BorderThickness="1"
+       CornerRadius="3"
+               Margin="10 0 0 0">
+          <StackPanel Orientation="Horizontal">
+            <Button Margin="5" Command="{Binding LoadProfile}" CommandParameter="2" IsEnabled="{Binding OidValue}" >Profile 2 Load</Button>
+            <Button Margin="5" Command="{Binding SaveProfile}" CommandParameter="2" IsEnabled="{Binding OidValue}" >Profile 2 Save</Button>
+          </StackPanel>
+        </Border>
+
+        <Border Background="WhiteSmoke"
+      BorderBrush="Black"
+      BorderThickness="1"
+      CornerRadius="3"
+              Margin="10 0 0 0">
+          <StackPanel Orientation="Horizontal">
+            <Button Margin="10 0 0 0" Command="{Binding LoadProfile}" CommandParameter="3" IsEnabled="{Binding OidValue}" >Profile 3 Load</Button>
+            <Button Margin="10 0 10 0" Command="{Binding SaveProfile}" CommandParameter="3" IsEnabled="{Binding OidValue}" >Profile 3 Save</Button>
+          </StackPanel>
+      </Border>
+
+        <Label VerticalAlignment="Center" Margin="10 0 0 0" IsVisible="{Binding ProfileStatusVisible}" Content="{Binding ProfileStatusText}" ></Label>
+        </StackPanel>
+      </StackPanel>
+    </Grid>
+  </Grid>
+</UserControl>
