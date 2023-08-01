@@ -1,5 +1,7 @@
 # SimpleSnmpClient
 Simple Snmp Client Gui application that allows you to perform snmp get and set supporting version 2 and 3.
+SNMPv3 Client with GUI
+SNMPv2 Client with GUI
 
 ### Current View ###
 
